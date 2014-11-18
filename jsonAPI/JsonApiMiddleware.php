@@ -125,7 +125,3 @@ class JsonApiMiddleware extends \Slim\Middleware {
     }
 
 }
-
-class JsonApiMiddlewareNotFoundException extends Exception{
-    
-}
