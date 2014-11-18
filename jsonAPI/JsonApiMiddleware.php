@@ -34,8 +34,7 @@ class JsonApiMiddleware extends \Slim\Middleware {
 
         // Mirrors the API request
         $app->get('/return', function() use ($app) {
-
-            $app->render(200,array(
+            $app->render(200, array(
                 'method'    => $app->request()->getMethod(),
                 'name'      => $app->request()->get('name'),
                 'headers'   => $app->request()->headers(),
@@ -45,9 +44,11 @@ class JsonApiMiddleware extends \Slim\Middleware {
 
         // Generic error handler
         $app->error(function (Exception $e) use ($app) {
-
-
-            $app->render(500,array(
+            $code = 500;
+            if ($e instanceof JsonApiMiddlewareNotFoundException) {
+                $code = 404;
+            }
+            $app->render($code, array(
                 'error' => true,
                 'msg'   => \JsonApiMiddleware::_errorType($e->getCode()) .": ". $e->getMessage(),
             ));
@@ -55,8 +56,8 @@ class JsonApiMiddleware extends \Slim\Middleware {
 
         // Not found handler (invalid routes, invalid method types)
         $app->notFound(function() use ($app) {
-            $app->render(404,array(
-                'error' => TRUE,
+            $app->render(404, array(
+                'error' => true,
                 'msg'   => 'Invalid route',
             ));
         });
@@ -70,8 +71,8 @@ class JsonApiMiddleware extends \Slim\Middleware {
             }
 
             if (strlen($app->response()->body()) == 0) {
-                $app->render(500,array(
-                    'error' => TRUE,
+                $app->render(500, array(
+                    'error' => true,
                     'msg'   => 'Empty response',
                 ));
             }
@@ -123,4 +124,8 @@ class JsonApiMiddleware extends \Slim\Middleware {
         }
     }
 
+}
+
+class JsonApiMiddlewareNotFoundException extends Exception{
+    
 }
